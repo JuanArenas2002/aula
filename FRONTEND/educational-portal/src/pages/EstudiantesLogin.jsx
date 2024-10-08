@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Typography, TextField, Button, Box, InputAdornment } from '@mui/material';
 import { styled, ThemeProvider, createTheme } from '@mui/material/styles';
-import CustomSwitch from '../components/CustomSwitch';
+import CustomSwitch from '../components/Switch';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LockIcon from '@mui/icons-material/Lock';
 

@@ -1,142 +1,247 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Typography, Paper, Box, TextField, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; // Para redirigir después de la actualización
+import React, { useEffect, useState } from 'react';
+import { Container, Typography, TextField, Button, Box, Snackbar, Alert, Grid, Card, CardContent } from '@mui/material';
+import styled from 'styled-components';
+import Loader from '../components/Loader';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+
+const GlassContainer = styled(Container)`
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(15px);
+  padding: 2rem;
+  margin-top: 2rem;
+`;
+
+const GlassCard = styled(Card)`
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+`;
+
+const StyledButton = styled(Button)`
+  background: linear-gradient(45deg, #6a5acd, #00bfff);
+  color: #fff;
+  
+  &:hover {
+    background: linear-gradient(45deg, #00bfff, #6a5acd);
+    transform: scale(1.05);
+    transition: transform .2s ease-in-out;
+}
+`;
 
 const PerfilInstitucion = () => {
-  const [institucion, setInstitucion] = useState({
-    nombre: '',
-    direccion: '',
-    correo: ''
-  });
-  const [isEditing, setIsEditing] = useState(false); // Estado para activar o desactivar la edición
-  const [loading, setLoading] = useState(true); // Estado para controlar la carga
-  const navigate = useNavigate();
+    const [perfil, setPerfil] = useState(null);
+    const [error, setError] = useState(null);
+    const [editMode, setEditMode] = useState(false);
+    const [formData, setFormData] = useState({
+        direccion: '',
+        correo: '',
+        clave: ''
+    });
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Función para obtener el perfil de la institución
     const fetchPerfilInstitucion = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3001/api/institucion/perfil', {
-          headers: {
-            Authorization: `Bearer ${token}` // Envía el token para autenticar la petición
-          }
-        });
-        const data = await response.json();
-        setInstitucion(data); // Guarda los datos de la institución
-        setLoading(false);
-      } catch (error) {
-        console.error('Error al obtener el perfil de la institución', error);
-      }
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:3001/api/institucion/perfil', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Not Found');
+            }
+            const data = await response.json();
+            setPerfil(data);
+            setFormData({
+                direccion: data.direccion,
+                correo: data.correo,
+                clave: ''
+            });
+        } catch (error) {
+            setError(error.message);
+            console.error('Error al obtener el perfil de la institución:', error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    fetchPerfilInstitucion();
-  }, []);
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
 
-  // Función para manejar la actualización de los datos
-  const handleUpdate = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3001/api/institucion/update', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(institucion) // Envía los datos actualizados
-      });
+    const handleEditToggle = () => {
+        setEditMode(!editMode);
+    };
 
-      if (response.ok) {
-        setIsEditing(false); // Desactivar el modo de edición
-        alert('Perfil actualizado exitosamente');
-      } else {
-        alert('Error al actualizar el perfil');
-      }
-    } catch (error) {
-      console.error('Error al actualizar el perfil', error);
+    const handleSaveChanges = async () => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:3001/api/institucion/${perfil.id_institucion}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
+            });
+            if (!response.ok) {
+                throw new Error('Error al actualizar el perfil');
+            }
+            const data = await response.json();
+            setPerfil(data);
+            setEditMode(false);
+            setSnackbarMessage('Perfil actualizado exitosamente');
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
+            fetchPerfilInstitucion();
+        } catch (error) {
+            setError(error.message);
+            console.error('Error al actualizar el perfil de la institución:', error.message);
+            setSnackbarMessage('Error al actualizar el perfil');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
+
+    useEffect(() => {
+        fetchPerfilInstitucion();
+    }, []);
+
+    if (loading) {
+        return (
+            <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="100vh"
+            >
+                <Loader />
+            </Box>
+        );
     }
-  };
 
-  // Función para manejar los cambios en los campos de texto
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setInstitucion((prevState) => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
+    if (error) {
+        return <Alert severity="error">Error: {error}</Alert>;
+    }
 
-  if (loading) {
-    return <Typography>Cargando...</Typography>; // Mostrar cargando mientras se obtiene la data
-  }
+    return (
+        <GlassContainer>
+            <Typography variant="h4" gutterBottom align="center" color="#6a5acd">
+                Perfil de la Institución
+            </Typography>
+            
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <GlassCard>
+                        <CardContent>
+                            {editMode ? (
+                                <>
+                                    <Typography variant="h6" gutterBottom color="#6a5acd">Editar Perfil</Typography>
+                                    <TextField
+                                        label="Dirección"
+                                        name="direccion"
+                                        value={formData.direccion}
+                                        onChange={handleInputChange}
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        InputLabelProps={{ style: { color: '#6a5acd' } }}
+                                    />
+                                    <TextField
+                                        label="Correo"
+                                        name="correo"
+                                        value={formData.correo}
+                                        onChange={handleInputChange}
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        InputLabelProps={{ style: { color: '#6a5acd' } }}
+                                    />
+                                    <TextField
+                                        label="Nueva Contraseña"
+                                        name="clave"
+                                        type="password"
+                                        value={formData.clave}
+                                        onChange={handleInputChange}
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        InputLabelProps={{ style: { color: '#6a5acd' } }}
+                                    />
+                                    <Box mt={2} display="flex" justifyContent="space-between">
+                                        <StyledButton 
+                                            variant="contained" 
+                                            startIcon={<SaveIcon />} 
+                                            onClick={handleSaveChanges} 
+                                            disabled={loading}
+                                        >
+                                            Guardar Cambios
+                                        </StyledButton>
+                                        
+                                        <StyledButton 
+                                            variant="outlined" 
+                                            startIcon={<CancelIcon />} 
+                                            onClick={handleEditToggle} 
+                                            disabled={loading}
+                                        >
+                                            Cancelar
+                                        </StyledButton>
+                                    </Box>
+                                </>
+                            ) : (
+                                <>
+                                    <Typography variant="h6" gutterBottom color="#6a5acd">Detalles del Perfil</Typography>
+                                    <Typography variant="body1"><strong>Dirección:</strong> {perfil.direccion}</Typography>
+                                    <Typography variant="body1"><strong>Correo:</strong> {perfil.correo}</Typography>
+                                    
+                                    <Box mt={2} display="flex" justifyContent="center">
+                                        <StyledButton 
+                                            variant="contained" 
+                                            startIcon={<EditIcon />} 
+                                            onClick={handleEditToggle}
+                                        >
+                                            Editar Perfil
+                                        </StyledButton>
+                                    </Box>
+                                </>
+                            )}
+                        </CardContent>
+                    </GlassCard>
+                </Grid>
+            </Grid>
 
-  return (
-    <Container maxWidth="md">
-      <Paper elevation={3} sx={{ padding: 4, marginTop: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Perfil de la Institución
-        </Typography>
-
-        <Box mt={2}>
-          <Typography variant="h6">Nombre de la Institución:</Typography>
-          {isEditing ? (
-            <TextField
-              fullWidth
-              variant="outlined"
-              name="nombre"
-              value={institucion.nombre}
-              onChange={handleChange}
-            />
-          ) : (
-            <Typography variant="body1">{institucion.nombre}</Typography>
-          )}
-        </Box>
-
-        <Box mt={2}>
-          <Typography variant="h6">Dirección:</Typography>
-          {isEditing ? (
-            <TextField
-              fullWidth
-              variant="outlined"
-              name="direccion"
-              value={institucion.direccion}
-              onChange={handleChange}
-            />
-          ) : (
-            <Typography variant="body1">{institucion.direccion}</Typography>
-          )}
-        </Box>
-
-        <Box mt={2}>
-          <Typography variant="h6">Correo Electrónico:</Typography>
-          {isEditing ? (
-            <TextField
-              fullWidth
-              variant="outlined"
-              name="correo"
-              value={institucion.correo}
-              onChange={handleChange}
-            />
-          ) : (
-            <Typography variant="body1">{institucion.correo}</Typography>
-          )}
-        </Box>
-
-        {/* Botones para activar/desactivar edición y guardar cambios */}
-        <Box mt={4}>
-          {isEditing ? (
-            <Button variant="contained" color="primary" onClick={handleUpdate}>
-              Guardar Cambios
-            </Button>
-          ) : (
-            <Button variant="outlined" onClick={() => setIsEditing(true)}>
-              Editar Perfil
-            </Button>
-          )}
-        </Box>
-      </Paper>
-    </Container>
-  );
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                sx={{ borderRadius: '8px', boxShadow: '0px 4px 10px rgba(0,0,0,.2)' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+        </GlassContainer>
+    );
 };
 
 export default PerfilInstitucion;

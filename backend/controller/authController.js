@@ -29,7 +29,7 @@ exports.login = (req, res) => {
       }
 
       // Si la contraseña coincide, generar un token JWT
-      const token = jwt.sign({ id: institucion.id_institucion }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ id: institucion.id_institucion, institucionNombre: institucion.nombre }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
       return res.status(200).json({ message: 'Inicio de sesión exitoso', token, institucion });
     });

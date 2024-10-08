@@ -1,26 +1,37 @@
+// src/App.jsx
 import React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import AppRoutes from './routes/AppRoutes';
-import CssBaseline from '@mui/material/CssBaseline';
-
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-});
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import PrivateRoute from './routes/PrivateRoute';
+import DashboardInstitucion from './pages/DashboardInstitucion';
+import PerfilInstitucion from './pages/PerfilInstitucion';
+import InstitutionLogin from './pages/InstitucionLogin';
+import Home from './HomePage'; // Corregido
 
 const App = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AppRoutes />
-    </ThemeProvider>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/institution-login" element={<InstitutionLogin />} />
+        <Route
+          path="/dashboard-institucion"
+          element={
+            <PrivateRoute>
+              <DashboardInstitucion />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/perfil-institucion"
+          element={
+            <PrivateRoute>
+              <PerfilInstitucion />
+            </PrivateRoute>
+          }
+        />
+        {/* Add more protected routes here */}
+      </Routes>
+    </Router>
   );
 };
 

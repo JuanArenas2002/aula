@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config(); // Cargar las variables de entorno desde .env
-const institucionRoutes = require('./routes/institucion');// Importar rutas de institucion
+require('dotenv').config();
+const institucionRoutes = require('./routes/institucion'); // Ruta correcta al archivo
 const profesoresRoutes = require('./routes/profesores');
 const telefonoProfesorRoutes = require('./routes/telefono_profesor');
 const direccionProfesorRoutes = require('./routes/direccion_profesor');
@@ -22,6 +22,7 @@ app.use('/api/profesores', profesoresRoutes);
 app.use('/api/telefono_profesor', telefonoProfesorRoutes);
 app.use('/api/direccion_profesor', direccionProfesorRoutes);
 app.use('/api/tipo_identificacion', tipoIdentificacionRoutes);
+app.use('/uploads', express.static('uploads'));
 app.use('/api/auth', authRoutes); // Correcta ruta para el manejo de autenticación
 
 // Servidor en escucha

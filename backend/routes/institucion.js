@@ -3,11 +3,22 @@ const router = express.Router();
 const db = require('../config/db'); // Asegúrate de que config/db.js está configurado para usar las variables de entorno
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken'); // Para generar el token JWT
-const { verifyToken } = require('../middleware/auth'); // Importamos el middleware para proteger las rutas
+const { verifyToken } = require('../middleware/auth');
 
-// Usar las variables de entorno
-const jwtSecret = process.env.JWT_SECRET || 'mi_secreto_super_seguro';
-const jwtExpiresIn = process.env.JWT_EXPIRES_IN || '1h';
+// Ruta protegida que obtiene el perfil de la institución
+router.get('/perfil', verifyToken, (req, res) => {
+    const id_institucion = req.institucionId;
+
+    db.query('SELECT nombre, direccion, correo FROM INSTITUCION WHERE id_institucion = ?', [id_institucion], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (result.length === 0) {
+            return res.status(404).json({ message: 'Institución no encontrada' });
+        }
+        res.json(result[0]);
+    });
+});
 
 // Obtener todas las instituciones (Protegida con JWT)
 router.get('/', verifyToken, (req, res) => {
@@ -81,8 +92,8 @@ router.post('/login', (req, res) => {
         // Generar un token JWT con el id y el nombre de la institución
         const token = jwt.sign(
             { id: institucion.id_institucion, institucionNombre: institucion.nombre },
-            jwtSecret,
-            { expiresIn: jwtExpiresIn }
+            process.env.JWT_SECRET || 'mi_secreto_super_seguro',
+            { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
         );
 
         // Responder con el token y el nombre de la institución
@@ -108,7 +119,7 @@ router.get('/:id', verifyToken, (req, res) => {
 // Actualizar una institución por su ID (Protegida con JWT)
 router.put('/:id', verifyToken, (req, res) => {
     const id_institucion = req.params.id;
-    const { nit, nombre, id_municipio, direccion, correo, clave, estado } = req.body;
+    const { direccion, correo, clave } = req.body;
 
     // Si se proporciona una nueva contraseña, hay que encriptarla antes de actualizar
     if (clave) {
@@ -118,8 +129,8 @@ router.put('/:id', verifyToken, (req, res) => {
             }
             // Actualizar la institución en la base de datos con la nueva clave encriptada
             db.query(
-                'UPDATE INSTITUCION SET nit = ?, nombre = ?, id_municipio = ?, direccion = ?, correo = ?, clave = ?, estado = ? WHERE id_institucion = ?',
-                [nit, nombre, id_municipio, direccion, correo, hashedPassword, estado, id_institucion],
+                'UPDATE INSTITUCION SET direccion = ?, correo = ?, clave = ? WHERE id_institucion = ?',
+                [direccion, correo, hashedPassword, id_institucion],
                 (err, result) => {
                     if (err) {
                         return res.status(500).json({ error: 'Error en la base de datos' });
@@ -132,10 +143,10 @@ router.put('/:id', verifyToken, (req, res) => {
             );
         });
     } else {
-        // Si no se proporciona una nueva clave, se actualizan los demás campos
+        // Actualizar la institución en la base de datos sin cambiar la clave
         db.query(
-            'UPDATE INSTITUCION SET nit = ?, nombre = ?, id_municipio = ?, direccion = ?, correo = ?, estado = ? WHERE id_institucion = ?',
-            [nit, nombre, id_municipio, direccion, correo, estado, id_institucion],
+            'UPDATE INSTITUCION SET direccion = ?, correo = ? WHERE id_institucion = ?',
+            [direccion, correo, id_institucion],
             (err, result) => {
                 if (err) {
                     return res.status(500).json({ error: 'Error en la base de datos' });
@@ -169,20 +180,6 @@ router.get('/ruta-protegida', verifyToken, (req, res) => {
     message: `Acceso permitido a la institución con ID: ${req.institucionId}`,
     institucion: req.institucionNombre
   });
-});
-
-router.get('/perfil', verifyToken, (req, res) => {
-    const id_institucion = req.institucionId; // Obtener el ID de la institución desde el token
-
-    db.query('SELECT nombre, direccion, correo FROM INSTITUCION WHERE id_institucion = ?', [id_institucion], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        if (result.length === 0) {
-            return res.status(404).json({ message: 'Institución no encontrada' });
-        }
-        res.json(result[0]); // Devolver los datos de la institución
-    });
 });
 
 module.exports = router;

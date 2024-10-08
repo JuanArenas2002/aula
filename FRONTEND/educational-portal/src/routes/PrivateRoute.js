@@ -1,11 +1,11 @@
+// src/routes/PrivateRoute.js
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { getToken } from '../services/authService';
 
-// Verificar si el token está en el localStorage
 const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem('token'); // Verifica si hay token de autenticación
+  const token = getToken(); // Get the token from localStorage
 
-  // Si el token existe, permite el acceso, de lo contrario, redirige al login
   return token ? children : <Navigate to="/institution-login" />;
 };
 

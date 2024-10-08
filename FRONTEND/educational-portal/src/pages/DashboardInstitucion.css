@@ -1,0 +1,16 @@
+/* Estilos para el logo del dashboard */
+.logo {
+  height: 32px;
+  margin: 16px;
+  text-align: center;
+}
+
+.site-layout-background {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.ant-layout-header {
+  background: #fff !important;
+}

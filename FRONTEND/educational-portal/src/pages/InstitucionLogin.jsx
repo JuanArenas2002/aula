@@ -1,13 +1,13 @@
+// src/pages/InstitutionLogin.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, TextField, Button, Box, InputAdornment } from '@mui/material';
-import { styled, ThemeProvider, createTheme } from '@mui/material/styles';
-import CustomSwitch from '../components/CustomSwitch'; // Asegúrate de que este componente esté correctamente importado
+import { styled, Box, TextField, Button, Typography } from '@mui/material';
 import BusinessIcon from '@mui/icons-material/Business';
 import LockIcon from '@mui/icons-material/Lock';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { login } from '../services/authService';
+import Switch from '../components/Switch'; // Asegúrate de que este componente esté correctamente importado
 
 // Estilo para el formulario
 const FormContainer = styled(Box)(({ theme }) => ({
@@ -29,180 +29,74 @@ const FormContainer = styled(Box)(({ theme }) => ({
 const IconContainer = styled(Box)(({ theme }) => ({
   fontSize: '4rem',
   marginBottom: '20px',
-  color: theme.palette.primary.main,
 }));
 
-// Componente del formulario de inicio de sesión para la institución
-const InstitucionLogin = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [nit, setNit] = useState('');
-  const [clave, setClave] = useState('');
-  const navigate = useNavigate(); // Para redirigir al dashboard
+const InstitutionLogin = () => {
+  const [credentials, setCredentials] = useState({ nit: '', clave: '' });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  // Tema para el modo claro/oscuro
-  const theme = createTheme({
-    palette: {
-      mode: darkMode ? 'dark' : 'light',
-      primary: {
-        main: darkMode ? '#90caf9' : '#1976d2',
-      },
-      secondary: {
-        main: darkMode ? '#f48fb1' : '#d32f2f',
-      },
-      background: {
-        default: darkMode ? '#121212' : '#f7f7f7',
-        paper: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)', // Fondo semi-transparente
-      },
-      text: {
-        primary: darkMode ? '#ffffff' : '#000000',
-        secondary: darkMode ? '#b0b0b0' : '#4f4f4f',
-      },
-    },
-    typography: {
-      h4: {
-        fontWeight: 'bold',
-        color: darkMode ? '#ffffff' : '#000000',
-      },
-      body2: {
-        color: darkMode ? '#b0b0b0' : '#4f4f4f',
-      },
-    },
-  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCredentials((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
-  // Función que maneja el envío del formulario de inicio de sesión
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Verifica los datos que se están enviando
-    console.log({ nit, clave });
-    
     try {
-      const response = await fetch('http://localhost:3001/api/institucion/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ nit, clave }), // Verifica los datos
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.token); 
-        toast.success('Inicio de sesión exitoso!', {
-          theme: darkMode ? 'dark' : 'light',
-        });
-        navigate('/dashboard-institucion'); 
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || 'Error en el inicio de sesión', {
-          theme: darkMode ? 'dark' : 'light',
-        });
-      }
+      await login(credentials);
+      navigate('/dashboard-institucion'); // Redirect to the dashboard after successful login
     } catch (error) {
-      toast.error('Error en la solicitud: ' + error.message, {
-        theme: darkMode ? 'dark' : 'light',
-      });
+      setError('Login failed. Please check your credentials and try again.');
+      toast.error('Login failed. Please check your credentials and try again.');
     }
   };
 
-  // Alternar entre modo claro y oscuro
-  const handleDarkModeToggle = () => {
-    setDarkMode(!darkMode);
-  };
-
   return (
-    <ThemeProvider theme={theme}>
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: darkMode ? '#121212' : '#f7f7f7',
-          padding: '16px',
-          position: 'relative',
-        }}
-      >
-        <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
-          <CustomSwitch checked={darkMode} onChange={handleDarkModeToggle} />
-        </Box>
-        <Container maxWidth="sm">
-          <FormContainer>
-            <Box sx={{ textAlign: 'center' }}>
-              <IconContainer>
-                <BusinessIcon fontSize="inherit" />
-              </IconContainer>
-            </Box>
-            <Typography variant="h4" align="center" gutterBottom>
-              Login Institución
-            </Typography>
-            <form onSubmit={handleSubmit}>
-              <TextField
-                label="NIT"
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                value={nit}
-                onChange={(e) => setNit(e.target.value)}
-                InputLabelProps={{
-                  style: { color: darkMode ? '#b0b0b0' : '#000000' },
-                }}
-                InputProps={{
-                  style: { color: darkMode ? '#ffffff' : '#000000' },
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <BusinessIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                label="Contraseña"
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                type="password"
-                value={clave}
-                onChange={(e) => setClave(e.target.value)}
-                InputLabelProps={{
-                  style: { color: darkMode ? '#b0b0b0' : '#000000' },
-                }}
-                InputProps={{
-                  style: { color: darkMode ? '#ffffff' : '#000000' },
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                type="submit"
-                sx={{
-                  mt: 2,
-                  padding: '12px',
-                  fontSize: '1.1rem',
-                  borderRadius: '8px',
-                  transition: 'background-color 0.3s ease',
-                  '&:hover': {
-                    backgroundColor: darkMode ? '#1976d2' : '#005bb5',
-                  },
-                }}
-              >
-                Iniciar Sesión
-              </Button>
-            </form>
-          </FormContainer>
-        </Container>
-        <ToastContainer />
-      </Box>
-    </ThemeProvider>
+    <FormContainer>
+      <IconContainer>
+        <BusinessIcon fontSize="inherit" />
+      </IconContainer>
+      <Typography variant="h4" gutterBottom>
+        Institution Login
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          label="NIT"
+          name="nit"
+          value={credentials.nit}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+          required
+          InputProps={{
+            startAdornment: <BusinessIcon />,
+          }}
+        />
+        <TextField
+          label="Clave"
+          name="clave"
+          type="password"
+          value={credentials.clave}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+          required
+          InputProps={{
+            startAdornment: <LockIcon />,
+          }}
+        />
+        {error && <Typography color="error">{error}</Typography>}
+        <Button type="submit" variant="contained" color="primary" fullWidth>
+          Login
+        </Button>
+      </form>
+      <ToastContainer />
+    </FormContainer>
   );
 };
 
-export default InstitucionLogin;
+export default InstitutionLogin;

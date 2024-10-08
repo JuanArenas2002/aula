@@ -1,30 +1,22 @@
+// src/routes/AppRoutes.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from '../pages/HomePage'; // Página principal
-import EstudiantesLogin from '../pages/EstudiantesLogin'; // Login de estudiantes
-import InstitucionLogin from '../pages/InstitucionLogin'; // Login de institución
-import ProfesorLogin from '../pages/ProfesorLogin'; // Login de profesores
-import SupportLogin from '../pages/SupportLogin'; // Login de soporte
-import DashboardInstitucion from '../pages/DashboardInstitucion'; // Dashboard de la institución
-import PrivateRoute from './PrivateRoute'; // Ruta protegida
-import PerfilInstitucion from '../pages/PerfilInstitucion'; // Perfil de la institución
-import GestionSalones from '../pages/GestionSalones'; // Gestión de salones
-import Reportes from '../pages/Reportes'; // Página de reportes
-import Configuracion from '../pages/Configuracion'; // Página de configuración
-import GestionProfesores from '../pages/GestionProfesores'; // Gestión de profesores
+import PrivateRoute from './PrivateRoute';
+import DashboardInstitucion from '../pages/DashboardInstitucion';
+import PerfilInstitucion from '../pages/PerfilInstitucion';
+import InstitutionLogin from '../pages/InstitucionLogin';
+import Home from '../pages/HomePage';
+import GestionSalones from '../pages/GestionSalones';
+import Reportes from '../pages/Reportes';
+import Configuracion from '../pages/Configuracion';
+import GestionProfesores from '../pages/GestionProfesores';
 
 const AppRoutes = () => {
   return (
     <Router>
       <Routes>
-        {/* Rutas de login y páginas públicas */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/student-login" element={<EstudiantesLogin />} />
-        <Route path="/institution-login" element={<InstitucionLogin />} />
-        <Route path="/teacher-login" element={<ProfesorLogin />} />
-        <Route path="/support-login" element={<SupportLogin />} />
-
-        {/* Rutas protegidas con PrivateRoute */}
+        <Route path="/" element={<Home />} />
+        <Route path="/institution-login" element={<InstitutionLogin />} />
         <Route
           path="/dashboard-institucion"
           element={
@@ -34,7 +26,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/perfil"
+          path="/perfil-institucion"
           element={
             <PrivateRoute>
               <PerfilInstitucion />
@@ -42,7 +34,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/salones"
+          path="/gestion-salones"
           element={
             <PrivateRoute>
               <GestionSalones />
@@ -73,6 +65,7 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         />
+        {/* Agrega más rutas privadas aquí */}
       </Routes>
     </Router>
   );
