@@ -7,7 +7,7 @@ const telefonoProfesorRoutes = require("./routes/telefono_profesor");
 const direccionProfesorRoutes = require("./routes/direccion_profesor");
 const tipoIdentificacionRoutes = require("./routes/tipo_identificacion");
 const authRoutes = require("./routes/authRoutes");
-const auth = require("./middleware/auth");
+const contarInstitucionesRoutes = require("./routes/contarInstituciones");
 
 const app = express();
 const port = process.env.PORT || 3001; // Usar puerto de la variable de entorno si está disponible
@@ -31,6 +31,7 @@ app.use("/api/profesores", profesoresRoutes);
 app.use("/api/telefono_profesor", telefonoProfesorRoutes);
 app.use("/api/direccion_profesor", direccionProfesorRoutes);
 app.use("/api/tipo_identificacion", tipoIdentificacionRoutes);
+app.use("/api/contarInstituciones", contarInstitucionesRoutes);
 app.use("/api/auth", authRoutes); // Ruta para autenticación
 
 // Middleware de manejo de errores
