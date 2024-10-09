@@ -9,7 +9,7 @@ const { verifyToken } = require('../middleware/auth');
 router.get('/perfil', verifyToken, (req, res) => {
     const id_institucion = req.institucionId;
 
-    db.query('SELECT nombre, direccion, correo FROM INSTITUCION WHERE id_institucion = ?', [id_institucion], (err, result) => {
+    db.query('SELECT id_institucion, nombre, direccion, correo FROM INSTITUCION WHERE id_institucion = ?', [id_institucion], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -19,6 +19,17 @@ router.get('/perfil', verifyToken, (req, res) => {
         res.json(result[0]);
     });
 });
+
+// Obtener la cantidad de instituciones activas (estado = 1)
+router.get('/activas', verifyToken, (req, res) => {
+    db.query('SELECT COUNT(*) AS count FROM INSTITUCION WHERE estado = 1', (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ count: result[0].count });
+    });
+});
+
 
 // Obtener todas las instituciones (Protegida con JWT)
 router.get('/', verifyToken, (req, res) => {

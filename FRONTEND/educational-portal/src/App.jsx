@@ -6,6 +6,7 @@ import DashboardInstitucion from './pages/DashboardInstitucion';
 import PerfilInstitucion from './pages/PerfilInstitucion';
 import InstitutionLogin from './pages/InstitucionLogin';
 import Home from './HomePage'; // Corregido
+import './App.css';
 
 const App = () => {
   return (

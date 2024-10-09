@@ -14,10 +14,10 @@ export const login = async (credentials) => {
             localStorage.setItem('token', data.token); // Store the token in localStorage
             return data;
         } else {
-            throw new Error('Login failed');
+            throw new Error('Error de inicio de sesión');
         }
     } catch (error) {
-        console.error('Error during login:', error);
+        console.error('Error durante el inicio de sesión:', error);
         throw error;
     }
 };
