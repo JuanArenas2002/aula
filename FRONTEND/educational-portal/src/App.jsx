@@ -5,7 +5,8 @@ import PrivateRoute from './routes/PrivateRoute';
 import DashboardInstitucion from './pages/DashboardInstitucion';
 import PerfilInstitucion from './pages/PerfilInstitucion';
 import InstitutionLogin from './pages/InstitucionLogin';
-import Home from './HomePage'; // Corregido
+import SupportLogin from './pages/SupportLogin'; // Importa el nuevo componente
+import Home from './HomePage';
 import './App.css';
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/institution-login" element={<InstitutionLogin />} />
+        <Route path="/support-login" element={<SupportLogin />} /> {/* Nueva ruta */}
         <Route
           path="/dashboard-institucion"
           element={

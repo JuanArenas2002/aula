@@ -1,7 +1,7 @@
-// src/services/authService.js
-export const login = async (url, credentials) => {
+// src/services/supportService.js
+export const loginSupport = async (credentials) => {
     try {
-        const response = await fetch(url, {
+        const response = await fetch('http://localhost:3001/api/support/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -24,11 +24,11 @@ export const login = async (url, credentials) => {
     }
 };
 
-export const logout = () => {
+export const logoutSupport = () => {
     localStorage.removeItem('token'); // Remove the token from localStorage
     window.location.href = '/login'; // Redirect to login page after logout
 };
 
-export const getToken = () => {
+export const getSupportToken = () => {
     return localStorage.getItem('token');
 };
