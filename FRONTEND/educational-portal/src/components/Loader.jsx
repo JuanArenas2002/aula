@@ -4,116 +4,234 @@ import styled from "styled-components";
 const Loader = () => {
   return (
     <StyledWrapper>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        height="200px"
-        width="200px"
-        viewBox="0 0 200 200"
-        className="pencil"
-      >
-        <defs>
-          <clipPath id="pencil-eraser">
-            <rect height="30" width="30" ry="5" rx="5" />
-          </clipPath>
-        </defs>
-        <circle
-          transform="rotate(-113,100,100)"
-          strokeLinecap="round"
-          strokeDashoffset={439.82}
-          strokeDasharray="439.82 439.82"
-          strokeWidth={2}
-          stroke="currentColor"
-          fill="none"
-          r="70"
-          className="pencil__stroke"
-        />
-        <g transform="translate(100,100)" className="pencil__rotate">
-          <g fill="none">
-            <circle
-              transform="rotate(-90)"
-              strokeDashoffset={402}
-              strokeDasharray="402.12 402.12"
-              strokeWidth={30}
-              stroke="hsl(223,90%,50%)"
-              r="64"
-              className="pencil__body1"
-            />
-            <circle
-              transform="rotate(-90)"
-              strokeDashoffset={465}
-              strokeDasharray="464.96 464.96"
-              strokeWidth={10}
-              stroke="hsl(223,90%,60%)"
-              r="74"
-              className="pencil__body2"
-            />
-            <circle
-              transform="rotate(-90)"
-              strokeDashoffset={339}
-              strokeDasharray="339.29 339.29"
-              strokeWidth={10}
-              stroke="hsl(223,90%,40%)"
-              r="54"
-              className="pencil__body3"
-            />
-          </g>
-          <g transform="rotate(-90) translate(49,0)" className="pencil__eraser">
-            <g className="pencil__eraser-skew">
-              <rect
-                height="30"
-                width="30"
-                ry="5"
-                rx="5"
-                fill="hsl(223,90%,70%)"
-              />
-              <rect
-                clipPath="url(#pencil-eraser)"
-                height="30"
-                width="5"
-                fill="hsl(223,90%,60%)"
-              />
-              <rect height="20" width="30" fill="hsl(223,10%,90%)" />
-              <rect height="20" width="15" fill="hsl(223,10%,70%)" />
-              <rect height="20" width="5" fill="hsl(223,10%,80%)" />
-              <rect height="2" width="30" y="6" fill="hsla(223,10%,10%,0.2)" />
-              <rect height="2" width="30" y="13" fill="hsla(223,10%,10%,0.2)" />
-            </g>
-          </g>
-          <g
-            transform="rotate(-90) translate(49,-30)"
-            className="pencil__point"
-          >
-            <polygon points="15 0,30 30,0 30" fill="hsl(33,90%,70%)" />
-            <polygon points="15 0,6 30,0 30" fill="hsl(33,90%,50%)" />
-            <polygon points="15 0,20 10,10 10" fill="hsl(223,10%,10%)" />
-          </g>
-        </g>
-      </svg>
+      <div className="container">
+        <div className="slice" />
+        <div className="slice" />
+        <div className="slice" />
+        <div className="slice" />
+        <div className="slice" />
+        <div className="slice" />
+      </div>
     </StyledWrapper>
   );
 };
 
 const StyledWrapper = styled.div`
-  .pencil {
-    display: block;
-    width: 10em;
-    height: 10em;
+  .container {
+  --uib-size: 150px;
+  --uib-speed: 2.5s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: var(--uib-size);
+  width: var(--uib-size);
+}
+
+.slice {
+  position: relative;
+  height: calc(var(--uib-size) / 6);
+  width: 100%;
+}
+
+.slice::before,
+.slice::after {
+  --uib-a: calc(var(--uib-speed) / -2);
+  --uib-b: calc(var(--uib-speed) / -6);
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(50% - var(--uib-size) / 12);
+  height: 100%;
+  width: calc(100% / 6);
+  border-radius: 50%;
+  background-color: var(--uib-color);
+  flex-shrink: 0;
+  animation: orbit var(--uib-speed) linear infinite;
+  transition: background-color 0.3s ease;
+}
+
+.slice:nth-child(1)::after {
+  animation-delay: var(--uib-a);
+}
+
+.slice:nth-child(2)::before {
+  animation-delay: var(--uib-b);
+}
+
+.slice:nth-child(2)::after {
+  animation-delay: calc(var(--uib-a) + var(--uib-b));
+}
+
+.slice:nth-child(3)::before {
+  animation-delay: calc(var(--uib-b) * 2);
+}
+
+.slice:nth-child(3)::after {
+  animation-delay: calc(var(--uib-a) + var(--uib-b) * 2);
+}
+
+.slice:nth-child(4)::before {
+  animation-delay: calc(var(--uib-b) * 3);
+}
+
+.slice:nth-child(4)::after {
+  animation-delay: calc(var(--uib-a) + var(--uib-b) * 3);
+}
+
+.slice:nth-child(5)::before {
+  animation-delay: calc(var(--uib-b) * 4);
+}
+
+.slice:nth-child(5)::after {
+  animation-delay: calc(var(--uib-a) + var(--uib-b) * 4);
+}
+
+.slice:nth-child(6)::before {
+  animation-delay: calc(var(--uib-b) * 5);
+}
+
+.slice:nth-child(6)::after {
+  animation-delay: calc(var(--uib-a) + var(--uib-b) * 5);
+}
+
+@keyframes orbit {
+  0% {
+    transform: translateX(calc(var(--uib-size) * 0.25)) scale(0.73684);
+    opacity: 0.65;
   }
 
-  .pencil__body1,
-  .pencil__body2,
-  .pencil__body3,
-  .pencil__eraser,
-  .pencil__eraser-skew,
-  .pencil__point,
-  .pencil__rotate,
-  .pencil__stroke {
-    animation-duration: 3s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
+  5% {
+    transform: translateX(calc(var(--uib-size) * 0.235)) scale(0.684208);
+    opacity: 0.58;
   }
 
-  /* Add your animations here */
+  10% {
+    transform: translateX(calc(var(--uib-size) * 0.182)) scale(0.631576);
+    opacity: 0.51;
+  }
+
+  15% {
+    transform: translateX(calc(var(--uib-size) * 0.129)) scale(0.578944);
+    opacity: 0.44;
+  }
+
+  20% {
+    transform: translateX(calc(var(--uib-size) * 0.076)) scale(0.526312);
+    opacity: 0.37;
+  }
+
+  25% {
+    transform: translateX(0%) scale(0.47368);
+    opacity: 0.3;
+  }
+
+  30% {
+    transform: translateX(calc(var(--uib-size) * -0.076)) scale(0.526312);
+    opacity: 0.37;
+  }
+
+  35% {
+    transform: translateX(calc(var(--uib-size) * -0.129)) scale(0.578944);
+    opacity: 0.44;
+  }
+
+  40% {
+    transform: translateX(calc(var(--uib-size) * -0.182)) scale(0.631576);
+    opacity: 0.51;
+  }
+
+  45% {
+    transform: translateX(calc(var(--uib-size) * -0.235)) scale(0.684208);
+    opacity: 0.58;
+  }
+
+  50% {
+    transform: translateX(calc(var(--uib-size) * -0.25)) scale(0.73684);
+    opacity: 0.65;
+  }
+
+  55% {
+    transform: translateX(calc(var(--uib-size) * -0.235)) scale(0.789472);
+    opacity: 0.72;
+  }
+
+  60% {
+    transform: translateX(calc(var(--uib-size) * -0.182)) scale(0.842104);
+    opacity: 0.79;
+  }
+
+  65% {
+    transform: translateX(calc(var(--uib-size) * -0.129)) scale(0.894736);
+    opacity: 0.86;
+  }
+
+  70% {
+    transform: translateX(calc(var(--uib-size) * -0.076)) scale(0.947368);
+    opacity: 0.93;
+  }
+
+  75% {
+    transform: translateX(0%) scale(1);
+    opacity: 1;
+  }
+
+  80% {
+    transform: translateX(calc(var(--uib-size) * 0.076)) scale(0.947368);
+    opacity: 0.93;
+  }
+
+  85% {
+    transform: translateX(calc(var(--uib-size) * 0.129)) scale(0.894736);
+    opacity: 0.86;
+  }
+
+  90% {
+    transform: translateX(calc(var(--uib-size) * 0.182)) scale(0.842104);
+    opacity: 0.79;
+  }
+
+  95% {
+    transform: translateX(calc(var(--uib-size) * 0.235)) scale(0.789472);
+    opacity: 0.72;
+  }
+
+  100% {
+    transform: translateX(calc(var(--uib-size) * 0.25)) scale(0.73684);
+    opacity: 0.65;
+  }
+}
+
+.slice:nth-child(1)::before,
+.slice:nth-child(1)::after {
+  background-color: #334dff;
+}
+
+.slice:nth-child(2)::before,
+.slice:nth-child(2)::after {
+  background-color: #333eff;
+}
+
+.slice:nth-child(3)::before,
+.slice:nth-child(3)::after {
+  background-color: #3334ff;
+}
+
+.slice:nth-child(4)::before,
+.slice:nth-child(4)::after {
+  background-color: #4433ff;
+}
+
+.slice:nth-child(5)::before,
+.slice:nth-child(5)::after {
+  background-color: #6633ff;
+}
+
+.slice:nth-child(6)::before,
+.slice:nth-child(6)::after {
+  background-color: #9933ff;
+}
+
 `;
 
 export default Loader;

@@ -1,18 +1,21 @@
 // backend/middleware/authSupport.js
 const jwt = require('jsonwebtoken');
-const jwtSecret = process.env.JWT_SECRET || 'mi_secreto_super_seguro';
 
 const verifySupportToken = (req, res, next) => {
-  const token = req.headers['authorization'];
+  // Obtener el token del encabezado de autorización
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Formato "Bearer <token>"
+
   if (!token) {
     return res.status(403).json({ message: 'Token no proporcionado' });
   }
 
   try {
-    const decoded = jwt.verify(token.split(' ')[1], jwtSecret);
-    req.supportId = decoded.id;
-    req.supportNombre = decoded.supportNombre;
-    next();
+    // Verificar el token JWT usando la clave secreta
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret');
+    req.supportId = decoded.id; // Agregar ID de soporte a la solicitud para referencia futura
+    req.supportNombre = decoded.userName;
+    next(); // Continuar con la siguiente función en la cadena de middleware
   } catch (err) {
     return res.status(401).json({ message: 'Token no válido' });
   }

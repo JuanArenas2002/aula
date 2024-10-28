@@ -1,0 +1,17 @@
+@startuml
+actor Usuario
+participant "Aplicación Móvil" as App
+participant "Servidor Central" as Server
+participant "Sistema AIoT" as AIoT
+participant "Sensor de Energía" as Sensor
+
+Usuario -> App: Solicitar monitoreo de consumo
+App -> Server: Enviar solicitud de monitoreo
+Server -> AIoT: Consultar datos de consumo
+AIoT -> Sensor: Obtener datos de consumo actual
+Sensor -> AIoT: Datos de consumo
+AIoT -> Server: Enviar datos de consumo
+Server -> App: Transmitir datos al usuario
+App -> Usuario: Mostrar datos de consumo
+
+@enduml

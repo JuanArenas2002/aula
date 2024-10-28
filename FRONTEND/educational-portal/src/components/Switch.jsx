@@ -1,69 +1,82 @@
-import React from "react";
-import styled from "styled-components";
+// src/components/InstitutionSwitch.jsx
+import React from 'react';
+import styled from 'styled-components';
 
-const CustomSwitch = ({ checked, onChange }) => {
+const InstitutionSwitch = ({ checked, onChange }) => {
   return (
-    <StyledWrapper>
-      <label className="switch">
-        <input type="checkbox" checked={checked} onChange={onChange} />
-        <span className="slider" />
-      </label>
-    </StyledWrapper>
+    <SwitchContainer checked={checked} onClick={onChange}>
+      <Toggle checked={checked}>
+        {checked ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="icon open"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 11V7a4 4 0 10-8 0v4m6 0h4a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6a2 2 0 012-2h6z"
+            />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="icon closed"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 11V7a4 4 0 00-8 0v4m6 0h4a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6a2 2 0 012-2h6z"
+            />
+          </svg>
+        )}
+      </Toggle>
+    </SwitchContainer>
   );
 };
 
-const StyledWrapper = styled.div`
-  /* The switch - the box around the slider */
-  .switch {
-    font-size: 17px;
-    position: relative;
-    display: inline-block;
-    width: 3.5em;
-    height: 2em;
+// Estilos con styled-components
+const SwitchContainer = styled.div`
+  width: 50px;
+  height: 28px;
+  background: ${({ checked }) =>
+    checked ? 'linear-gradient(135deg, #20cca5, #17a398)' : 'linear-gradient(135deg, #ff5b5b, #d9534f)'};
+  border-radius: 14px;
+  padding: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: ${({ checked }) =>
+    checked ? '0px 0px 10px rgba(32, 204, 165, 0.5)' : '0px 0px 10px rgba(255, 91, 91, 0.5)'};
+`;
+
+const Toggle = styled.div`
+  width: 24px;
+  height: 24px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.3s ease;
+  transform: ${({ checked }) => (checked ? 'translateX(22px)' : 'translateX(0)')};
+  
+  .icon {
+    width: 14px;
+    height: 14px;
+    stroke: ${({ checked }) => (checked ? '#20cca5' : '#ff5b5b')};
+    stroke-width: 2;
+    transition: stroke 0.3s ease, transform 0.3s ease;
   }
 
-  /* Hide default HTML checkbox */
-  .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+  .open {
+    transform: ${({ checked }) => (checked ? 'scale(1)' : 'scale(0)')};
+    opacity: ${({ checked }) => (checked ? 1 : 0)};
   }
 
-  /* The slider */
-  .slider {
-    --background: #28096b;
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--background);
-    transition: 0.5s;
-    border-radius: 30px;
-  }
-
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 1.4em;
-    width: 1.4em;
-    border-radius: 50%;
-    left: 10%;
-    bottom: 15%;
-    box-shadow: inset 8px -4px 0px 0px #fff000;
-    background: var(--background);
-    transition: 0.5s;
-  }
-
-  input:checked + .slider {
-    background-color: #522ba7;
-  }
-
-  input:checked + .slider:before {
-    transform: translateX(100%);
-    box-shadow: inset 15px -4px 0px 15px #fff000;
+  .closed {
+    transform: ${({ checked }) => (checked ? 'scale(0)' : 'scale(1)')};
+    opacity: ${({ checked }) => (checked ? 0 : 1)};
   }
 `;
 
-export default CustomSwitch;
+export default InstitutionSwitch;

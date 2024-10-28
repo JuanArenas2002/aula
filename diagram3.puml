@@ -1,0 +1,38 @@
+@startuml
+class Usuario {
+    +String nombre
+    +String email
+    +String contraseña
+    +void iniciarSesion()
+    +void cerrarSesion()
+}
+
+class AplicacionMovil {
+    +void solicitarMonitoreo()
+    +void mostrarDatos()
+}
+
+class SistemaAIoT {
+    +void procesarSolicitud()
+    +void obtenerDatos()
+}
+
+class Sensor {
+    +String tipo
+    +String ubicacion
+    +float valorLectura
+    +void medirConsumo()
+}
+
+class DatosConsumo {
+    +Date fecha
+    +float consumo
+    +float temperatura
+}
+
+Usuario "1" -- "1" AplicacionMovil : usa
+AplicacionMovil "1" --> "1" SistemaAIoT : solicita datos
+SistemaAIoT "1" --> "*" Sensor : recopila datos
+Sensor "1" --> "*" DatosConsumo : genera
+
+@enduml

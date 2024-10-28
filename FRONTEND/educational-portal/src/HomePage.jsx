@@ -3,248 +3,234 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Box,
   Grid,
   Container,
+  IconButton,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import SchoolIcon from "@mui/icons-material/School"; // Icono añadido para instituciones activas
+import MenuIcon from "@mui/icons-material/Menu";
+import SchoolIcon from "@mui/icons-material/School";
+import SupportAgentIcon from "@mui/icons-material/SupportAgent";
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import GroupIcon from "@mui/icons-material/Group";
+import StarIcon from "@mui/icons-material/Star";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
-// Botón estilizado en modo oscuro
-const StyledButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "#1f2937", // Color de fondo oscuro
-  color: "#ffffff", // Texto blanco
-  padding: "12px 24px",
-  borderRadius: "8px",
-  fontWeight: "bold",
-  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)", // Sombra para mayor impacto
-  transition: "all 0.3s ease-in-out",
+// Icono flotante de WhatsApp
+const WhatsAppFloatingIcon = styled(IconButton)({
+  position: "fixed",
+  bottom: "20px",
+  right: "20px",
+  backgroundColor: "#25D366",
+  color: "#ffffff",
+  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.3)",
   "&:hover": {
-    backgroundColor: "#3b3b3b", // Efecto hover
-    transform: "scale(1.05)", // Ligero agrandamiento al pasar el mouse
+    backgroundColor: "#1ebe57",
+  },
+  zIndex: 1000,
+});
+
+// Sección de Encabezado con gradiente más suave en modo oscuro
+const HeaderSection = styled(Box)(({ theme }) => ({
+  minHeight: "40vh",
+  backgroundImage: theme.palette.mode === "dark"
+    ? "linear-gradient(to right, #2a2a2a, #3a3a3a)"
+    : "linear-gradient(to right, #1e3c72, #2a5298)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  color: theme.palette.mode === "dark" ? "#e0e0e0" : "#fff",
+  textAlign: "center",
+  padding: "0 20px",
+}));
+
+const FeatureCard = styled(Box)(({ theme }) => ({
+  padding: "1.5rem",
+  textAlign: "center",
+  backgroundColor: theme.palette.mode === "dark" ? "#333333" : "#ffffff",
+  borderRadius: "12px",
+  boxShadow: theme.palette.mode === "dark" ? "0 6px 15px rgba(0, 0, 0, 0.4)" : "0 6px 15px rgba(0, 0, 0, 0.1)",
+  transition: "all 0.3s ease",
+  color: theme.palette.mode === "dark" ? "#e0e0e0" : "#333",
+  "&:hover": {
+    transform: "scale(1.05)",
+    boxShadow: theme.palette.mode === "dark" ? "0 10px 25px rgba(0, 0, 0, 0.5)" : "0 10px 25px rgba(0, 0, 0, 0.15)",
   },
 }));
 
-// Navbar transparente con efecto de desenfoque
-const Navbar = () => {
-  return (
-    <AppBar
-      position="fixed"
-      sx={{
-        backdropFilter: "blur(10px)", // Efecto de desenfoque
-        backgroundColor: "rgba(31, 31, 31, 0.8)", // Transparente con opacidad en negro
-        boxShadow: "none",
-        padding: "10px 0",
-        zIndex: 1201,
-      }}
-    >
-      <Toolbar sx={{ justifyContent: "space-between", padding: "0 20px" }}>
-        <Typography variant="h6" sx={{ color: "#ffffff", fontWeight: "bold" }}>
-          AulaTech
-        </Typography>
-        <Box>
-          <StyledButton href="/support-login" sx={{ marginRight: "15px" }}>
-            Support
-          </StyledButton>
-          <StyledButton href="/institution-login" sx={{ marginRight: "15px" }}>
-            Institución
-          </StyledButton>
-        </Box>
-      </Toolbar>
-    </AppBar>
-  );
-};
-
-// Tarjetas de información en modo oscuro
-const InfoBox = styled(Box)(({ theme }) => ({
-  padding: "2rem",
+const StatCard = styled(Box)(({ theme }) => ({
+  padding: "1.5rem",
   textAlign: "center",
-  background: "rgba(31, 31, 31, 0.9)", // Fondo oscuro con un poco de transparencia
+  backgroundColor: theme.palette.mode === "dark" ? "#2f2f2f" : "#f7f7f7",
   borderRadius: "12px",
-  boxShadow: "0 6px 18px rgba(0, 0, 0, 0.2)", // Sombra más pronunciada para mayor profundidad
-  color: "#fff", // Texto blanco
-  transition: "all 0.3s ease-in-out",
+  boxShadow: theme.palette.mode === "dark" ? "0 6px 12px rgba(0, 0, 0, 0.3)" : "0 6px 12px rgba(0, 0, 0, 0.1)",
+  transition: "all 0.3s ease",
+  color: theme.palette.mode === "dark" ? "#bdbdbd" : "#333",
   "&:hover": {
-    transform: "scale(1.05)", // Crecimiento suave al pasar el mouse
-    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.4)", // Sombra más intensa al pasar el mouse
+    transform: "scale(1.03)",
+    boxShadow: theme.palette.mode === "dark" ? "0 8px 20px rgba(0, 0, 0, 0.4)" : "0 8px 20px rgba(0, 0, 0, 0.15)",
   },
-}));
-
-// Tarjeta visual transparente para instituciones activas con icono
-const ActiveInstitutionsBox = styled(Box)(({ theme }) => ({
-  padding: "2rem",
-  textAlign: "center",
-  background: "rgba(31, 31, 31, 0.9)", // Mismo fondo transparente que las otras tarjetas
-  borderRadius: "12px",
-  boxShadow: "0 6px 18px rgba(0, 0, 0, 0.2)", // Sombra más pronunciada
-  color: "#ffffff", // Texto blanco
-  transition: "all 0.3s ease-in-out",
-  position: "relative",
-  overflow: "hidden",
-  "&:before": {
-    content: '""',
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    background: "rgba(255, 255, 255, 0.15)",
-    zIndex: 0,
-    transform: "scale(0)",
-    transition: "transform 0.5s ease-in-out",
-  },
-  "&:hover:before": {
-    transform: "scale(2)", // Efecto de expansión
-  },
-  "&:hover": {
-    transform: "scale(1.05)", // Crecimiento suave al pasar el mouse
-    boxShadow: "0 12px 30px rgba(0, 0, 0, 0.5)", // Sombra más intensa al pasar el mouse
-  },
-  zIndex: 1,
 }));
 
 const HomePage = () => {
-  const [activeInstitutions, setActiveInstitutions] = useState(0); // Estado para almacenar el número de instituciones activas
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [activeInstitutions, setActiveInstitutions] = useState(0);
 
-  // Llamada a la API para obtener las instituciones activas (estado = 1)
+  const handleDropdownMenuOpen = (event) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleDropdownMenuClose = () => {
+    setMenuAnchorEl(null);
+  };
+
   useEffect(() => {
     const fetchActiveInstitutions = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:3001/api/contarInstituciones/activas"
-        ); // Asegúrate de que esta URL sea correcta
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
+        const response = await fetch("http://localhost:3001/api/contarInstituciones/activas");
         const data = await response.json();
         setActiveInstitutions(data.count);
       } catch (error) {
         console.error("Error fetching active institutions:", error);
       }
     };
-
     fetchActiveInstitutions();
   }, []);
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #0f2027, #203a43, #2c5364)", // Gradiente oscuro
-        paddingBottom: "50px",
-        paddingTop: "100px", // Asegurarse de que el contenido no esté debajo del navbar
-      }}
-    >
-      {/* Navbar */}
-      <Navbar />
+    <Box>
+      {/* Navbar with Dropdown Menu */}
+      <AppBar position="fixed" sx={{ background: "rgba(30, 30, 30, 0.85)" }}>
+        <Toolbar sx={{ justifyContent: "space-between" }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold", color: "#fff" }}>
+            AulaTech
+          </Typography>
+          <IconButton color="inherit" onClick={handleDropdownMenuOpen}>
+            <MenuIcon />
+          </IconButton>
+          <Menu
+            anchorEl={menuAnchorEl}
+            open={Boolean(menuAnchorEl)}
+            onClose={handleDropdownMenuClose}
+            PaperProps={{
+              sx: {
+                backgroundColor: "#1e3c72",
+                color: "#ffffff",
+                minWidth: "200px",
+                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.3)",
+              },
+            }}
+          >
+            <MenuItem onClick={handleDropdownMenuClose} component="a" href="/institution-login" sx={{ "&:hover": { backgroundColor: "#2a5298" } }}>
+              <ListItemIcon>
+                <SchoolIcon sx={{ color: "#ffffff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Institución Login" />
+            </MenuItem>
+            <MenuItem onClick={handleDropdownMenuClose} component="a" href="/support-login" sx={{ "&:hover": { backgroundColor: "#2a5298" } }}>
+              <ListItemIcon>
+                <SupportAgentIcon sx={{ color: "#ffffff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Support Login" />
+            </MenuItem>
+          </Menu>
+        </Toolbar>
+      </AppBar>
 
-      {/* Sección "Sobre Nosotros" */}
-      <Container>
-        <Typography
-          variant="h4"
-          sx={{
-            color: "#fff",
-            marginBottom: "40px",
-            textAlign: "center",
-            fontWeight: "bold",
-          }}
-        >
-          ¿Quiénes Somos?
+      {/* Sección de Encabezado */}
+      <HeaderSection>
+        <Container>
+          <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: "10px" }}>
+            Transformando la Educación con Tecnología
+          </Typography>
+          <Typography variant="h6" sx={{ color: "#bdbdbd" }}>
+            Soluciones digitales para una gestión educativa de vanguardia
+          </Typography>
+        </Container>
+      </HeaderSection>
+
+      {/* Sección de Características */}
+      <Container sx={{ marginTop: "30px", marginBottom: "40px" }}>
+        <Typography variant="h4" sx={{ textAlign: "center", fontWeight: "bold", marginBottom: "30px" }}>
+          ¿Por qué elegir AulaTech?
         </Typography>
-
-        <Grid container spacing={3}>
+        <Grid container spacing={3} justifyContent="center">
           <Grid item xs={12} sm={6} md={4}>
-            <InfoBox>
-              <Typography
-                variant="h6"
-                sx={{ marginBottom: "10px", fontWeight: "bold" }}
-              >
-                Nuestra Misión
+            <FeatureCard>
+              <AssessmentIcon sx={{ fontSize: 50, color: "#ff5722", marginBottom: "15px" }} />
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>Análisis de Datos Educativos</Typography>
+              <Typography variant="body1" sx={{ color: theme => theme.palette.mode === "dark" ? "#c7c7c7" : "#666" }}>
+                Informes detallados para tomar decisiones informadas.
               </Typography>
-              <Typography variant="body1" sx={{ color: "#ccc" }}>
-                En AulaTech, estamos comprometidos con transformar la educación
-                a través de la tecnología, facilitando el aprendizaje y la
-                gestión educativa para instituciones, profesores y estudiantes.
-              </Typography>
-            </InfoBox>
+            </FeatureCard>
           </Grid>
-
           <Grid item xs={12} sm={6} md={4}>
-            <InfoBox>
-              <Typography
-                variant="h6"
-                sx={{ marginBottom: "10px", fontWeight: "bold" }}
-              >
-                Nuestra Visión
+            <FeatureCard>
+              <GroupIcon sx={{ fontSize: 50, color: "#ff5722", marginBottom: "15px" }} />
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>Plataforma Colaborativa</Typography>
+              <Typography variant="body1" sx={{ color: theme => theme.palette.mode === "dark" ? "#c7c7c7" : "#666" }}>
+                Comunicación fluida entre profesores y estudiantes.
               </Typography>
-              <Typography variant="body1" sx={{ color: "#ccc" }}>
-                Ser líderes en soluciones tecnológicas educativas, impulsando el
-                futuro de la educación digital y garantizando la calidad y
-                eficiencia en el aprendizaje.
-              </Typography>
-            </InfoBox>
+            </FeatureCard>
           </Grid>
-
           <Grid item xs={12} sm={6} md={4}>
-            <InfoBox>
-              <Typography
-                variant="h6"
-                sx={{ marginBottom: "10px", fontWeight: "bold" }}
-              >
-                ¿Qué Ofrecemos?
+            <FeatureCard>
+              <StarIcon sx={{ fontSize: 50, color: "#ff5722", marginBottom: "15px" }} />
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>Soporte Dedicado</Typography>
+              <Typography variant="body1" sx={{ color: theme => theme.palette.mode === "dark" ? "#c7c7c7" : "#666" }}>
+                Atención personalizada para cada institución.
               </Typography>
-              <Typography variant="body1" sx={{ color: "#ccc" }}>
-                Proporcionamos herramientas avanzadas de gestión educativa,
-                análisis de datos y plataformas colaborativas que mejoran la
-                enseñanza y la organización institucional.
-              </Typography>
-            </InfoBox>
-          </Grid>
-
-          {/* Nueva tarjeta para mostrar el número de instituciones activas */}
-          <Grid item xs={12} sm={6} md={4}>
-            <ActiveInstitutionsBox>
-              <SchoolIcon
-                sx={{ fontSize: 80, color: "#fff", marginBottom: "20px" }}
-              /> {/* Icono añadido */}
-              <Typography
-                variant="h6"
-                sx={{ marginBottom: "10px", fontWeight: "bold" }}
-              >
-                Instituciones Activas
-              </Typography>
-              <Typography
-                variant="h4"
-                sx={{ color: "#00FF00", marginBottom: "10px" }}
-              >
-                {activeInstitutions}
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#ccc" }}>
-                Instituciones activas en la plataforma
-              </Typography>
-            </ActiveInstitutionsBox>
+            </FeatureCard>
           </Grid>
         </Grid>
-
-        {/* Llamada a la acción */}
-        <Box sx={{ textAlign: "center", marginTop: "60px" }}>
-          <Typography
-            variant="h5"
-            sx={{ color: "#fff", marginBottom: "20px", fontWeight: "bold" }}
-          >
-            ¡Descubre cómo AulaTech puede llevar tu institución al siguiente
-            nivel!
-          </Typography>
-          <StyledButton
-            href="https://wa.me/573005770988?text=Hola%2C%20me%20gustaría%20obtener%20más%20información%20sobre%20AulaTech."
-            target="_blank"
-            sx={{ backgroundColor: "#4CAF50", color: "#fff" }}
-          >
-            Contáctanos
-          </StyledButton>
-        </Box>
       </Container>
+
+      {/* Sección de Instituciones Activas */}
+      <Container sx={{ textAlign: "center", marginY: "40px" }}>
+        <Typography variant="h5" sx={{ fontWeight: "bold", color: "#ff5722", marginBottom: "20px" }}>
+          En Números
+        </Typography>
+        <Grid container spacing={3} justifyContent="center">
+          <Grid item xs={12} sm={4} md={3}>
+            <StatCard>
+              <Typography variant="h4" sx={{ fontWeight: "bold", color: "#00796b" }}>{activeInstitutions}</Typography>
+              <Typography variant="body1">Instituciones Activas</Typography>
+            </StatCard>
+          </Grid>
+          <Grid item xs={12} sm={4} md={3}>
+            <StatCard>
+              <Typography variant="h4" sx={{ fontWeight: "bold", color: "#00796b" }}>2000+</Typography>
+              <Typography variant="body1">Alumnos</Typography>
+            </StatCard>
+          </Grid>
+          <Grid item xs={12} sm={4} md={3}>
+            <StatCard>
+              <Typography variant="h4" sx={{ fontWeight: "bold", color: "#00796b" }}>500+</Typography>
+              <Typography variant="body1">Docentes</Typography>
+            </StatCard>
+          </Grid>
+        </Grid>
+      </Container>
+
+      {/* Llamada a la Acción Final */}
+      <Box sx={{ textAlign: "center", padding: "40px 20px", backgroundColor: theme => theme.palette.mode === "dark" ? "#333333" : "#ff5722", color: "#ffffff" }}>
+        <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: "20px" }}>
+          ¿Listo para transformar tu institución?
+        </Typography>
+      </Box>
+
+      {/* Icono de WhatsApp flotante */}
+      <WhatsAppFloatingIcon
+        href="https://wa.me/573005770988?text=Hola%2C%20me%20gustaría%20obtener%20más%20información%20sobre%20AulaTech."
+        target="_blank"
+      >
+        <WhatsAppIcon fontSize="large" />
+      </WhatsAppFloatingIcon>
     </Box>
   );
 };

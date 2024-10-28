@@ -1,0 +1,21 @@
+@startuml
+start
+:Usuario inicia la aplicación;
+:Seleccionar opción "Monitorear consumo de energía";
+
+if (¿Usuario autenticado?) then (Sí)
+    :Solicitar datos al servidor central;
+    :Servidor consulta datos de consumo al sistema AIoT;
+
+    if (¿Datos disponibles?) then (Sí)
+        :Recibir datos de consumo del sensor;
+        :Mostrar datos en pantalla;
+    else (No)
+        :Mostrar mensaje de error "Datos no disponibles";
+    endif
+else (No)
+    :Redirigir al usuario a la pantalla de login;
+endif
+
+stop
+@enduml

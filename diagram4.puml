@@ -1,0 +1,25 @@
+- Inicio
+  - Monitoreo de Consumo
+    - Gráficos en tiempo real
+    - Alertas de sobreconsumo
+  - Historial de Consumo
+    - Búsqueda por fecha
+    - Comparativas por periodo
+  - Configuración de Sensores
+    - Añadir nuevo sensor
+    - Editar o eliminar sensor
+    - Configurar alertas
+  - Usuarios
+    - Lista de usuarios
+    - Roles y permisos
+    - Agregar/Eliminar usuario
+  - Reportes
+    - Generar reporte por periodo
+    - Exportar a PDF/Excel
+  - Configuración de Cuenta
+    - Actualizar perfil
+    - Cambiar contraseña
+  - Ayuda y Soporte
+    - FAQ
+    - Manual de usuario
+    - Contactar soporte

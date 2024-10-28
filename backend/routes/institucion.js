@@ -1,91 +1,80 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/db'); // Asegúrate de que config/db.js está configurado para usar las variables de entorno
+const db = require('../config/db'); // El pool de conexiones configurado para usar promesas
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken'); // Para generar el token JWT
 const { verifyToken } = require('../middleware/auth');
 
+
+
+
+
 // Ruta protegida que obtiene el perfil de la institución
-router.get('/perfil', verifyToken, (req, res) => {
+router.get('/perfil', verifyToken, async (req, res) => {
     const id_institucion = req.institucionId;
 
-    db.query('SELECT id_institucion, nombre, direccion, correo FROM INSTITUCION WHERE id_institucion = ?', [id_institucion], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
+    try {
+        const [result] = await db.query('SELECT id_institucion, nombre, direccion, correo FROM INSTITUCION WHERE id_institucion = ?', [id_institucion]);
         if (result.length === 0) {
             return res.status(404).json({ message: 'Institución no encontrada' });
         }
         res.json(result[0]);
-    });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 });
 
 // Obtener la cantidad de instituciones activas (estado = 1)
-router.get('/activas', verifyToken, (req, res) => {
-    db.query('SELECT COUNT(*) AS count FROM INSTITUCION WHERE estado = 1', (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
+router.get('/activas', verifyToken, async (req, res) => {
+    try {
+        const [result] = await db.query('SELECT COUNT(*) AS count FROM INSTITUCION WHERE estado = 1');
         res.json({ count: result[0].count });
-    });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 });
-
 
 // Obtener todas las instituciones (Protegida con JWT)
-router.get('/', verifyToken, (req, res) => {
-    db.query('SELECT * FROM INSTITUCION', (err, results) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json(results);
-    });
-});
+
 
 // Crear una nueva institución
 router.post('/', async (req, res) => {
     const { nit, nombre, id_municipio, direccion, correo, clave, estado } = req.body;
 
     try {
-        // Verifica si NIT y clave son proporcionados
+        // Verificar si ya existe una institución con el mismo NIT
+        const [existingInstitution] = await db.query('SELECT * FROM INSTITUCION WHERE nit = ?', [nit]);
+        if (existingInstitution.length > 0) {
+            return res.status(400).json({ error: 'Ya existe una institución con ese NIT' });
+        }
+
         if (!nit || !clave) {
             return res.status(400).json({ error: 'NIT y clave son obligatorios' });
         }
 
-        // Generar un hash para la contraseña
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(clave, salt);
 
-        // Insertar la institución en la base de datos
-        db.query(
+        const [result] = await db.query(
             'INSERT INTO INSTITUCION (nit, nombre, id_municipio, direccion, correo, clave, estado) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [nit, nombre || null, id_municipio || null, direccion || null, correo || null, hashedPassword, estado || null],
-            (err, result) => {
-                if (err) {
-                    return res.status(500).json({ error: err.message });
-                }
-                res.status(201).json({ message: 'Institución creada exitosamente', id: result.insertId });
-            }
+            [nit, nombre || null, id_municipio || null, direccion || null, correo || null, hashedPassword, estado || null]
         );
+        res.status(201).json({ message: 'Institución creada exitosamente', id: result.insertId });
     } catch (err) {
         res.status(500).json({ error: 'Error al crear la institución', details: err.message });
     }
 });
 
 // Ruta de inicio de sesión
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
     const { nit, clave } = req.body;
 
-    // Verificar si el NIT y la clave están presentes
     if (!nit || !clave) {
         return res.status(400).json({ error: 'NIT y clave son requeridos' });
     }
 
-    // Buscar la institución por NIT
-    db.query('SELECT * FROM INSTITUCION WHERE nit = ?', [nit], async (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error en la base de datos' });
-        }
+    try {
+        const [results] = await db.query('SELECT * FROM INSTITUCION WHERE nit = ?', [nit]);
 
         if (results.length === 0) {
             return res.status(404).json({ error: 'Institución no encontrada' });
@@ -93,104 +82,116 @@ router.post('/login', (req, res) => {
 
         const institucion = results[0];
 
-        // Comparar la clave proporcionada con la clave encriptada en la base de datos
         const isMatch = await bcrypt.compare(clave, institucion.clave);
-
         if (!isMatch) {
             return res.status(400).json({ error: 'Clave incorrecta' });
         }
 
-        // Generar un token JWT con el id y el nombre de la institución
         const token = jwt.sign(
             { id: institucion.id_institucion, institucionNombre: institucion.nombre },
             process.env.JWT_SECRET || 'mi_secreto_super_seguro',
             { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
         );
 
-        // Responder con el token y el nombre de la institución
         res.json({ token, institucionNombre: institucion.nombre });
-    });
+    } catch (err) {
+        return res.status(500).json({ error: 'Error en la base de datos', details: err.message });
+    }
 });
 
 // Obtener detalles de una institución por su ID (Protegida con JWT)
-router.get('/:id', verifyToken, (req, res) => {
+router.get('/:id', verifyToken, async (req, res) => {
     const id_institucion = req.params.id;
 
-    db.query('SELECT * FROM INSTITUCION WHERE id_institucion = ?', [id_institucion], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
+    try {
+        const [result] = await db.query('SELECT * FROM INSTITUCION WHERE id_institucion = ?', [id_institucion]);
         if (result.length === 0) {
             return res.status(404).json({ message: 'Institución no encontrada' });
         }
         res.json(result[0]);
-    });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 });
 
 // Actualizar una institución por su ID (Protegida con JWT)
-router.put('/:id', verifyToken, (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
     const id_institucion = req.params.id;
     const { direccion, correo, clave } = req.body;
 
-    // Si se proporciona una nueva contraseña, hay que encriptarla antes de actualizar
-    if (clave) {
-        bcrypt.hash(clave, 10, (err, hashedPassword) => {
-            if (err) {
-                return res.status(500).json({ error: 'Error al encriptar la nueva clave' });
-            }
-            // Actualizar la institución en la base de datos con la nueva clave encriptada
-            db.query(
+    try {
+        if (clave) {
+            const hashedPassword = await bcrypt.hash(clave, 10);
+            const [result] = await db.query(
                 'UPDATE INSTITUCION SET direccion = ?, correo = ?, clave = ? WHERE id_institucion = ?',
-                [direccion, correo, hashedPassword, id_institucion],
-                (err, result) => {
-                    if (err) {
-                        return res.status(500).json({ error: 'Error en la base de datos' });
-                    }
-                    if (result.affectedRows === 0) {
-                        return res.status(404).json({ message: 'Institución no encontrada' });
-                    }
-                    res.json({ message: 'Institución actualizada exitosamente' });
-                }
+                [direccion, correo, hashedPassword, id_institucion]
             );
-        });
-    } else {
-        // Actualizar la institución en la base de datos sin cambiar la clave
-        db.query(
-            'UPDATE INSTITUCION SET direccion = ?, correo = ? WHERE id_institucion = ?',
-            [direccion, correo, id_institucion],
-            (err, result) => {
-                if (err) {
-                    return res.status(500).json({ error: 'Error en la base de datos' });
-                }
-                if (result.affectedRows === 0) {
-                    return res.status(404).json({ message: 'Institución no encontrada' });
-                }
-                res.json({ message: 'Institución actualizada exitosamente' });
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ message: 'Institución no encontrada' });
             }
-        );
+            res.json({ message: 'Institución actualizada exitosamente' });
+        } else {
+            const [result] = await db.query(
+                'UPDATE INSTITUCION SET direccion = ?, correo = ? WHERE id_institucion = ?',
+                [direccion, correo, id_institucion]
+            );
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ message: 'Institución no encontrada' });
+            }
+            res.json({ message: 'Institución actualizada exitosamente' });
+        }
+    } catch (err) {
+        return res.status(500).json({ error: 'Error en la base de datos', details: err.message });
     }
 });
 
 // Eliminar una institución por su ID (Protegida con JWT)
-router.delete('/:id', verifyToken, (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
     const id_institucion = req.params.id;
-    db.query('DELETE FROM INSTITUCION WHERE id_institucion = ?', [id_institucion], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
+
+    try {
+        const [result] = await db.query('DELETE FROM INSTITUCION WHERE id_institucion = ?', [id_institucion]);
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Institución no encontrada' });
         }
         res.json({ message: 'Institución eliminada exitosamente' });
-    });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 });
 
-// Ruta protegida de ejemplo
-router.get('/ruta-protegida', verifyToken, (req, res) => {
-  res.json({
-    message: `Acceso permitido a la institución con ID: ${req.institucionId}`,
-    institucion: req.institucionNombre
+// Cambiar estado de la institución
+router.put('/institucion/:id_institucion/toggleStatus', async (req, res) => {
+    const { id_institucion } = req.params;
+    
+    try {
+      const [rows] = await db.query(
+        'SELECT estado FROM institucion WHERE id_institucion = ?',
+        [id_institucion]
+      );
+  
+      if (rows.length === 0) {
+        return res.status(404).json({ message: 'Institución no encontrada' });
+      }
+  
+      const estadoActual = parseInt(rows[0].estado, 10);
+      const nuevoEstado = estadoActual === 1 ? 0 : 1;
+  
+      const [updateResult] = await db.query(
+        'UPDATE institucion SET estado = ? WHERE id_institucion = ?',
+        [nuevoEstado, id_institucion]
+      );
+  
+      if (updateResult.affectedRows === 1) {
+        res.json({ id_institucion, estado: nuevoEstado });
+      } else {
+        res.status(500).json({ message: 'No se pudo actualizar el estado de la institución' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error al cambiar el estado de la institución' });
+    }
   });
-});
+
+
 
 module.exports = router;

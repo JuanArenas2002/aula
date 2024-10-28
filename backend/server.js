@@ -3,14 +3,14 @@ const cors = require("cors");
 require("dotenv").config();
 
 // Importación de rutas
-const institucionRoutes = require("./routes/institucion");
+const institucionRoutes = require('./routes/institucion'); 
 const profesoresRoutes = require("./routes/profesores");
 const telefonoProfesorRoutes = require("./routes/telefono_profesor");
 const direccionProfesorRoutes = require("./routes/direccion_profesor");
 const tipoIdentificacionRoutes = require("./routes/tipo_identificacion");
 const authRoutes = require("./routes/authRoutes");
 const contarInstitucionesRoutes = require("./routes/contarInstituciones");
-const supportRoutes = require('./routes/supportRoutes'); 
+const supportRoutes = require('./routes/supportRoutes');
 const CRUDsoporte = require('./routes/CRUDsoporte');
 
 const app = express();
@@ -29,6 +29,8 @@ app.use(express.json());
 // Middleware para servir archivos estáticos (ej. imágenes, documentos)
 app.use("/uploads", express.static("uploads"));
 
+
+
 // Definición de rutas
 app.use("/api/institucion", institucionRoutes); // Rutas para las instituciones
 app.use("/api/profesores", profesoresRoutes); // Rutas para profesores
@@ -36,9 +38,9 @@ app.use("/api/telefono_profesor", telefonoProfesorRoutes); // Rutas para teléfo
 app.use("/api/direccion_profesor", direccionProfesorRoutes); // Rutas para direcciones de profesores
 app.use("/api/tipo_identificacion", tipoIdentificacionRoutes); // Rutas para tipos de identificación
 app.use("/api/contarInstituciones", contarInstitucionesRoutes); // Rutas para contar instituciones
-app.use('/api/support', supportRoutes); // Rutas para soporte
-app.use('/api/soporte', CRUDsoporte); // Rutas para soporte
-app.use("/api/auth", authRoutes); // Ruta de autenticación (puedes eliminar si ya no es necesaria)
+app.use('/api/support', supportRoutes);
+app.use('/api/CRUDsoporte', CRUDsoporte); // Rutas CRUD de soporte
+app.use("/api/auth", authRoutes); // Ruta de autenticación
 
 // Middleware de manejo de errores
 app.use((err, req, res, next) => {

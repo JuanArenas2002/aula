@@ -1,34 +1,53 @@
 // src/services/supportService.js
-export const loginSupport = async (credentials) => {
-    try {
-        const response = await fetch('http://localhost:3001/api/support/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(credentials),
-        });
+import axios from 'axios';
 
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem('token', data.token); // Store the token in localStorage
-            return data;
-        } else {
-            const errorData = await response.json();
-            console.error('Error de inicio de sesión:', errorData);
-            throw new Error('Error de inicio de sesión');
-        }
-    } catch (error) {
-        console.error('Error durante el inicio de sesión:', error);
-        throw error;
-    }
+const API_URL = 'http://localhost:3001/api/support';
+
+// Función para iniciar sesión de soporte
+export const loginSupport = async (loginData) => {
+  try {
+    const response = await axios.post(`${API_URL}/login`, loginData);
+    return response.data;
+  } catch (error) {
+    console.error('Error al iniciar sesión de soporte', error);
+    throw error;
+  }
 };
 
-export const logoutSupport = () => {
-    localStorage.removeItem('token'); // Remove the token from localStorage
-    window.location.href = '/login'; // Redirect to login page after logout
+// Función para crear una nueva institución
+export const createInstitution = async (institutionData) => {
+  try {
+    const response = await axios.post(`${API_URL}/institucion`, institutionData);
+    return response.data;
+  } catch (error) {
+    console.error('Error al crear la institución', error);
+    throw error;
+  }
 };
 
-export const getSupportToken = () => {
-    return localStorage.getItem('token');
+export const fetchMunicipios = async (searchQuery = '') => {
+  try {
+    const response = await axios.get(`${API_URL}/municipios`, {
+      params: { q: searchQuery },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener los municipios', error);
+    throw error;
+  }
+
+};
+export const fetchDepartamentos = async () => {
+  const response = await axios.get(`${API_URL}/departamentos`);
+  return response.data;
+};
+
+export const fetchMunicipiosByDepartamento = async (departamentoId) => {
+  try {
+    const response = await axios.get(`http://localhost:3001/api/support/municipios/${departamentoId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener municipios:', error);
+    throw error;
+  }
 };

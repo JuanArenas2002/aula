@@ -3,10 +3,16 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { getToken } from '../services/authService';
 
-const PrivateRoute = ({ children }) => {
-  const token = getToken(); // Get the token from localStorage
+const PrivateRoute = ({ children, role }) => {
+  const token = getToken();
+  const storedRole = localStorage.getItem('role');
 
-  return token ? children : <Navigate to="/institution-login" />;
+  if (token && storedRole === role) {
+    return children;
+  }
+
+  const redirectPath = role === 'support' ? '/support-login' : '/institution-login';
+  return <Navigate to={redirectPath} />;
 };
 
 export default PrivateRoute;

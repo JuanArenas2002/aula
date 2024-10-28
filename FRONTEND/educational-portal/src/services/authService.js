@@ -1,34 +1,31 @@
 // src/services/authService.js
-export const login = async (url, credentials) => {
+export const login = async (path, credentials) => {
     try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(credentials),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem('token', data.token); // Store the token in localStorage
-            return data;
-        } else {
-            const errorData = await response.json();
-            console.error('Error de inicio de sesión:', errorData);
-            throw new Error('Error de inicio de sesión');
-        }
+      const response = await fetch(`http://localhost:3001/api/auth/${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+      });
+  
+      if (!response.ok) throw new Error('Credenciales incorrectas');
+  
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role', data.role);
+  
+      return data;
     } catch (error) {
-        console.error('Error durante el inicio de sesión:', error);
-        throw error;
+      console.error(error.message);
+      throw error;
     }
-};
-
-export const logout = () => {
-    localStorage.removeItem('token'); // Remove the token from localStorage
-    window.location.href = '/login'; // Redirect to login page after logout
-};
-
-export const getToken = () => {
-    return localStorage.getItem('token');
-};
+  };
+  
+  // Obtener el token de localStorage
+  export const getToken = () => localStorage.getItem('token');
+  
+  // Cerrar sesión
+  export const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+  };
+  

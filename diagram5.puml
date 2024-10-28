@@ -1,0 +1,36 @@
+@startuml
+skinparam componentStyle rectangle
+
+[Inicio] --> [Monitoreo de Consumo]
+[Monitoreo de Consumo] --> [Gráfico en tiempo real]
+[Monitoreo de Consumo] --> [Alertas de sobreconsumo]
+
+[Inicio] --> [Historial de Consumo]
+[Historial de Consumo] --> [Comparativas por periodo]
+[Historial de Consumo] --> [Búsqueda por fecha]
+
+[Inicio] --> [Configuración de Sensores]
+[Configuración de Sensores] --> [Añadir nuevo sensor]
+[Configuración de Sensores] --> [Editar o eliminar sensor]
+[Configuración de Sensores] --> [Configurar alertas]
+
+[Inicio] --> [Usuarios]
+[Usuarios] --> [Lista de usuarios]
+[Usuarios] --> [Roles y permisos]
+[Usuarios] --> [Agregar/Eliminar usuario]
+
+[Inicio] --> [Reportes]
+[Reportes] --> [Generar reporte por periodo]
+[Reportes] --> [Exportar a PDF/Excel]
+
+[Inicio] --> [Configuración de Cuenta]
+[Configuración de Cuenta] --> [Actualizar perfil]
+[Configuración de Cuenta] --> [Cambiar contraseña]
+
+[Inicio] --> [Ayuda y Soporte]
+[Ayuda y Soporte] --> [FAQ]
+[Ayuda y Soporte] --> [Manual de usuario]
+[Ayuda y Soporte] --> [Contactar soporte]
+
+@enduml
+
