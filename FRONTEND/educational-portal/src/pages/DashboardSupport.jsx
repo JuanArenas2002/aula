@@ -48,7 +48,7 @@ const StyledBox = styled(Box)({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  marginTop: "4rem", // Para ajustarse al navbar
+  marginTop: "4rem", // Ajuste para el navbar
 });
 
 const Header = styled(Typography)({
@@ -199,6 +199,11 @@ const DashboardSupport = () => {
     }
   };
 
+
+  const downloadReport = () => {
+    window.open("http://localhost:3001/api/support/reporte-instituciones", "_blank");
+  };
+
   if (loading) {
     return <Loader message="Cargando instituciones..." />;
   }
@@ -219,17 +224,10 @@ const DashboardSupport = () => {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Dashboard de Soporte - Instituciones
           </Typography>
-          <IconButton
-            color="inherit"
-            onClick={handleMenuClick}
-          >
+          <IconButton color="inherit" onClick={handleMenuClick}>
             <MenuIcon />
           </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
             <MenuItem onClick={handleLogout}>
               <LogoutIcon fontSize="small" sx={{ marginRight: 1 }} />
               Cerrar Sesión
@@ -240,7 +238,6 @@ const DashboardSupport = () => {
 
       {/* Contenido principal */}
       <StyledBox>
-        {/* Header como título principal */}
         <Header>Dashboard de Soporte - Instituciones</Header>
 
         <TextField
@@ -283,6 +280,20 @@ const DashboardSupport = () => {
           onClick={() => navigate("/create-institution")}
         >
           Crear Nueva Institución
+        </Button>
+
+        <Button
+          variant="contained"
+          color="secondary"
+          sx={{
+            marginBottom: "1rem",
+            backgroundColor: "#4caf50",
+            "&:hover": { backgroundColor: "#388e3c" },
+            marginLeft: "1rem",
+          }}
+          onClick={downloadReport}
+        >
+          Generar Reporte PDF
         </Button>
 
         <Divider sx={{ width: "100%", maxWidth: "90%", marginBottom: "1rem" }} />

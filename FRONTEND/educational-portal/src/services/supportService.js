@@ -42,12 +42,20 @@ export const fetchDepartamentos = async () => {
   return response.data;
 };
 
-export const fetchMunicipiosByDepartamento = async (departamentoId) => {
+// Función para obtener municipios por departamento
+export const fetchMunicipiosByDepartamento = async (departamento_id) => {
   try {
-    const response = await axios.get(`http://localhost:3001/api/support/municipios/${departamentoId}`);
+    const response = await axios.get(`${API_URL}/municipios/${departamento_id}`);
     return response.data;
   } catch (error) {
-    console.error('Error al obtener municipios:', error);
+    console.error('Error al obtener los municipios', error);
     throw error;
   }
+};
+
+export const downloadPDF = async () => {
+  const response = await axios.get("http://localhost:3001/api/support/reporte-instituciones", {
+    responseType: "blob",
+  });
+  return response;
 };
