@@ -9,9 +9,9 @@ import SupportLogin from './pages/SupportLogin';
 import Home from './HomePage';
 import DashboardSupport from './pages/DashboardSupport';
 import CreateInstitution from './pages/CreateInstitution';
+import ProfesorManagement from './pages/ProfessorManagement';
+import PensumManagement from './pages/PensumManagement'; // Importa el nuevo componente
 import './App.css';
-
-
 
 const App = () => {
   return (
@@ -56,12 +56,32 @@ const App = () => {
           }
         />
 
+        {/* Gestión de Profesores (solo accesible para usuarios con rol "institution") */}
+        <Route
+          path="/profesores"
+          element={
+            <PrivateRoute role="institution">
+              <ProfesorManagement />
+            </PrivateRoute>
+          }
+        />
+
         {/* Perfil de Institución (solo accesible para usuarios con rol "institution") */}
         <Route
           path="/perfil-institucion"
           element={
             <PrivateRoute role="institution">
               <PerfilInstitucion />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Administración de Pensum (solo accesible para usuarios con rol "institution") */}
+        <Route
+          path="/pensum"
+          element={
+            <PrivateRoute role="institution">
+              <PensumManagement />
             </PrivateRoute>
           }
         />

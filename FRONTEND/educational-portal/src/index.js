@@ -1,11 +1,15 @@
+// src/index.js
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import App from './App';
-import { ThemeContextProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <ThemeContextProvider>
+
+
+ReactDOM.render(
+  <AuthProvider>
     <App />
-  </ThemeContextProvider>
+  </AuthProvider>,
+  document.getElementById('root')
 );
+

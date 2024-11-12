@@ -1,29 +1,18 @@
-const mysql = require('mysql2');
-const dotenv = require('dotenv');
+const { Sequelize } = require('sequelize');
 
-// Cargar variables de entorno desde el archivo .env
-dotenv.config();
-
-// Crear el pool de conexiones
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASS || '', // Contraseña de la base de datos
-    database: process.env.DB_NAME || 'aula',
-    waitForConnections: true,
-    connectionLimit: 10,  // Ajusta este valor según tu necesidad
-    queueLimit: 0
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+    host: process.env.DB_HOST,
+    dialect: 'mysql',
+    logging: console.log, // Puedes desactivar el log con `false`
 });
 
-// Verificar la conexión al iniciar
-pool.getConnection((err, connection) => {
-    if (err) {
-        console.error('ERROR AL CONECTAR A LA BASE DE DATOS:', err);
-        return;
+(async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('Conexión a la base de datos establecida exitosamente con Sequelize.');
+    } catch (error) {
+        console.error('Error al conectar con la base de datos:', error);
     }
-    console.log('Conectado a la base de datos MySQL');
-    connection.release(); // Liberar la conexión una vez verificada
-});
+})();
 
-// Exportar el pool para ser utilizado en otros módulos
-module.exports = pool.promise();  // Usar la interfaz de promesas para usar async/await
+module.exports = sequelize;

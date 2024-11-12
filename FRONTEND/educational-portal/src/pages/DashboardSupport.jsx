@@ -37,10 +37,9 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import Cookies from "js-cookie";
 
+// Estilo del contenedor principal
 const StyledBox = styled(Box)({
   minHeight: "100vh",
   backgroundColor: "#f4f6f8",
@@ -48,9 +47,10 @@ const StyledBox = styled(Box)({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  marginTop: "4rem", // Ajuste para el navbar
+  marginTop: "4rem",
 });
 
+// Estilo del encabezado
 const Header = styled(Typography)({
   fontSize: "2.2rem",
   fontWeight: "600",
@@ -58,6 +58,7 @@ const Header = styled(Typography)({
   marginBottom: "1.5rem",
 });
 
+// Estilo de la tabla
 const StyledTableContainer = styled(TableContainer)({
   borderRadius: "8px",
   maxWidth: "90%",
@@ -65,42 +66,51 @@ const StyledTableContainer = styled(TableContainer)({
   overflow: "hidden",
 });
 
+// Encabezado de la tabla
 const StyledTableHead = styled(TableHead)({
-  backgroundColor: "#3f51b5",
+  backgroundColor: "#1A2027",
 });
 
+// Celdas de la tabla
 const StyledTableCell = styled(TableCell)({
   color: "#ffffff",
-  fontWeight: "500",
+  fontWeight: "bold",
   fontSize: "1rem",
   padding: "1rem",
   textAlign: "center",
+  borderBottom: "1px solid rgba(224, 224, 224, 1)",
 });
 
+// Filas de la tabla con efecto hover
 const StyledTableRow = styled(TableRow)({
   "&:nth-of-type(even)": {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#f8f9fa",
+  },
+  "&:hover": {
+    backgroundColor: "#e0e7ff",
   },
   height: "auto",
 });
 
-// Componente StatusCell con ajuste para evitar pasar institutionStatus al DOM
-const StatusCell = styled(({ institutionStatus, ...otherProps }) => (
-  <TableCell {...otherProps} />
-))(({ institutionStatus }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "0.9rem",
-  color: institutionStatus === 1 ? "#388e3c" : "#d32f2f",
-  textAlign: "center",
-  fontWeight: "500",
+// Estilos simples para el estado
+const statusStyles = {
+  activo: {
+    color: "#28a745", // Verde para estado activo
+    fontWeight: "bold",
+  },
+  inactivo: {
+    color: "#dc3545", // Rojo para estado inactivo
+    fontWeight: "bold",
+  },
+};
+
+// Ajuste de la celda de estado sin Chip
+const StatusCell = styled(TableCell)({
   padding: "0.5rem",
-  gap: "0.25rem",
-  borderBottom: "1px solid rgba(224, 224, 224, 1)",
-  minWidth: "100px",
+  textAlign: "center",
   height: "40px",
-}));
+  borderBottom: "1px solid rgba(224, 224, 224, 1)",
+});
 
 const DashboardSupport = () => {
   const [institutions, setInstitutions] = useState([]);
@@ -110,7 +120,7 @@ const DashboardSupport = () => {
   const [error, setError] = useState(null);
   const [selectedInstitution, setSelectedInstitution] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null); // Para el menú desplegable
+  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -199,9 +209,11 @@ const DashboardSupport = () => {
     }
   };
 
-
   const downloadReport = () => {
-    window.open("http://localhost:3001/api/support/reporte-instituciones", "_blank");
+    window.open(
+      "http://localhost:3001/api/support/reporte-instituciones",
+      "_blank"
+    );
   };
 
   if (loading) {
@@ -219,7 +231,11 @@ const DashboardSupport = () => {
   return (
     <>
       {/* Navbar */}
-      <AppBar position="fixed" color="primary" sx={{ backgroundColor: "#3f51b5" }}>
+      <AppBar
+        position="fixed"
+        color="primary"
+        sx={{ backgroundColor: "#3f51b5" }}
+      >
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Dashboard de Soporte - Instituciones
@@ -227,7 +243,11 @@ const DashboardSupport = () => {
           <IconButton color="inherit" onClick={handleMenuClick}>
             <MenuIcon />
           </IconButton>
-          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
             <MenuItem onClick={handleLogout}>
               <LogoutIcon fontSize="small" sx={{ marginRight: 1 }} />
               Cerrar Sesión
@@ -236,7 +256,6 @@ const DashboardSupport = () => {
         </Toolbar>
       </AppBar>
 
-      {/* Contenido principal */}
       <StyledBox>
         <Header>Dashboard de Soporte - Instituciones</Header>
 
@@ -251,21 +270,6 @@ const DashboardSupport = () => {
             backgroundColor: "#fff",
             borderRadius: "8px",
             boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "8px",
-              "& fieldset": {
-                borderColor: "transparent",
-              },
-              "&:hover fieldset": {
-                borderColor: "#3f51b5",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#3f51b5",
-              },
-            },
-            "& .MuiInputLabel-outlined": {
-              color: "#333",
-            },
           }}
         />
 
@@ -284,7 +288,6 @@ const DashboardSupport = () => {
 
         <Button
           variant="contained"
-          color="secondary"
           sx={{
             marginBottom: "1rem",
             backgroundColor: "#4caf50",
@@ -319,23 +322,20 @@ const DashboardSupport = () => {
                   <TableCell align="center">{institution.nit}</TableCell>
                   <TableCell align="center">{institution.nombre}</TableCell>
                   <TableCell align="center">
-                    {institution.municipio || "No asignado"}
+                    {institution.municipio ? institution.municipio.municipio : "No asignado"}
                   </TableCell>
                   <TableCell align="center">{institution.direccion}</TableCell>
                   <TableCell align="center">{institution.correo}</TableCell>
-                  <StatusCell institutionStatus={institution.estado} align="center">
-                    {institution.estado === 1 ? (
-                      <>
-                        <CheckCircleIcon fontSize="small" style={{ color: "#388e3c" }} />
-                        Activo
-                      </>
-                    ) : (
-                      <>
-                        <ErrorOutlineIcon fontSize="small" style={{ color: "#d32f2f" }} />
-                        Inactivo
-                      </>
-                    )}
+                  
+                  {/* Celda de estado simplificada */}
+                  <StatusCell>
+                    <span
+                      style={institution.estado === 1 ? statusStyles.activo : statusStyles.inactivo}
+                    >
+                      {institution.estado === 1 ? "Activo" : "Inactivo"}
+                    </span>
                   </StatusCell>
+
                   <TableCell align="center">
                     <CustomSwitch
                       checked={institution.estado === 1}
@@ -348,27 +348,13 @@ const DashboardSupport = () => {
           </Table>
         </StyledTableContainer>
 
-        <Dialog
-          open={isDialogOpen}
-          onClose={closeDialog}
-          aria-labelledby="confirm-dialog-title"
-          aria-describedby="confirm-dialog-description"
-          PaperProps={{
-            style: {
-              borderRadius: "10px",
-              padding: "10px",
-            },
-          }}
-        >
-          <DialogTitle
-            id="confirm-dialog-title"
-            sx={{ color: "#d32f2f", fontWeight: "500" }}
-          >
-            <WarningAmberIcon sx={{ marginRight: "8px" }} />
+        <Dialog open={isDialogOpen} onClose={closeDialog}>
+          <DialogTitle>
+            <WarningAmberIcon sx={{ color: "#d32f2f", marginRight: "8px" }} />
             Confirmar Cambio de Estado
           </DialogTitle>
           <DialogContent>
-            <DialogContentText id="confirm-dialog-description">
+            <DialogContentText>
               ¿Estás seguro de que deseas cambiar el estado de la institución{" "}
               <strong>{selectedInstitution?.nombre}</strong>?
             </DialogContentText>
@@ -377,16 +363,7 @@ const DashboardSupport = () => {
             <Button onClick={closeDialog} sx={{ color: "#888" }}>
               Cancelar
             </Button>
-            <Button
-              onClick={confirmToggleStatus}
-              variant="contained"
-              color="primary"
-              sx={{
-                backgroundColor: "#3f51b5",
-                "&:hover": { backgroundColor: "#303f9f" },
-                fontWeight: "bold",
-              }}
-            >
+            <Button onClick={confirmToggleStatus} color="primary" variant="contained">
               Confirmar
             </Button>
           </DialogActions>

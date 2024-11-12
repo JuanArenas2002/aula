@@ -3,8 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 // Importación de rutas
-const institucionRoutes = require('./routes/institucion'); 
-const profesoresRoutes = require("./routes/profesores");
+const institucionRoutes = require('./routes/institucion');
 const telefonoProfesorRoutes = require("./routes/telefono_profesor");
 const direccionProfesorRoutes = require("./routes/direccion_profesor");
 const tipoIdentificacionRoutes = require("./routes/tipo_identificacion");
@@ -12,35 +11,43 @@ const authRoutes = require("./routes/authRoutes");
 const contarInstitucionesRoutes = require("./routes/contarInstituciones");
 const supportRoutes = require('./routes/supportRoutes');
 const CRUDsoporte = require('./routes/CRUDsoporte');
+const profesoresRoutes = require('./routes/ProfessorRoutes');
+const pensumRoutes = require('./routes/PensumRoutes'); 
+const { Sequelize } = require('sequelize');
 
 const app = express();
-const port = process.env.PORT || 3001; // Usar puerto de la variable de entorno si está disponible
+const port = process.env.PORT || 3001;
 
-// Middleware de CORS para permitir el acceso desde el frontend
+// Middleware de CORS
 app.use(cors({
-    origin: '*', // Cambiar a la URL de frontend para producción
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
-    credentials: true, // Si usas cookies o credenciales
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
 }));
 
-// Middleware para parsear JSON
-app.use(express.json());
+// Middleware para parsear JSON solo en métodos que no sean GET
+app.use((req, res, next) => {
+    if (req.method !== 'GET') {
+        express.json()(req, res, next);
+    } else {
+        next();
+    }
+});
 
-// Middleware para servir archivos estáticos (ej. imágenes, documentos)
+// Middleware para servir archivos estáticos (e.g., imágenes)
 app.use("/uploads", express.static("uploads"));
 
-
-
 // Definición de rutas
-app.use("/api/institucion", institucionRoutes); // Rutas para las instituciones
-app.use("/api/profesores", profesoresRoutes); // Rutas para profesores
-app.use("/api/telefono_profesor", telefonoProfesorRoutes); // Rutas para teléfonos de profesores
-app.use("/api/direccion_profesor", direccionProfesorRoutes); // Rutas para direcciones de profesores
-app.use("/api/tipo_identificacion", tipoIdentificacionRoutes); // Rutas para tipos de identificación
-app.use("/api/contarInstituciones", contarInstitucionesRoutes); // Rutas para contar instituciones
-app.use('/api/support', supportRoutes);
-app.use('/api/CRUDsoporte', CRUDsoporte); // Rutas CRUD de soporte
-app.use("/api/auth", authRoutes); // Ruta de autenticación
+app.use("/api/institucion", institucionRoutes);
+app.use("/api/telefono_profesor", telefonoProfesorRoutes);
+app.use("/api/direccion_profesor", direccionProfesorRoutes);
+app.use("/api/tipo_identificacion", tipoIdentificacionRoutes);
+app.use("/api/contarInstituciones", contarInstitucionesRoutes);
+app.use("/api/support", supportRoutes);
+app.use("/api/CRUDsoporte", CRUDsoporte);
+app.use("/api/auth", authRoutes);
+app.use('/api/profesores', profesoresRoutes);
+app.use('/api', pensumRoutes);
 
 // Middleware de manejo de errores
 app.use((err, req, res, next) => {

@@ -1,4 +1,3 @@
-// backend/middleware/authSupport.js
 const jwt = require('jsonwebtoken');
 
 const verifySupportToken = (req, res, next) => {
@@ -14,10 +13,11 @@ const verifySupportToken = (req, res, next) => {
     // Verificar el token JWT usando la clave secreta
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret');
     req.supportId = decoded.id; // Agregar ID de soporte a la solicitud para referencia futura
-    req.supportNombre = decoded.userName;
+    req.supportNombre = decoded.nombre; // Asumir que 'nombre' es un campo en el payload del token
     next(); // Continuar con la siguiente función en la cadena de middleware
   } catch (err) {
-    return res.status(401).json({ message: 'Token no válido' });
+    console.error('Error al verificar el token:', err);
+    return res.status(401).json({ message: 'Token no válido o expirado' });
   }
 };
 
